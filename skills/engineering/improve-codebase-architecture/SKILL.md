@@ -34,6 +34,13 @@ Then spawn a sub-agent to walk the codebase. Don't follow rigid heuristics — e
 
 Apply the **deletion test** to anything you suspect is shallow: would deleting it concentrate complexity, or just move it? A "yes, concentrates" is the signal you want.
 
+**Ground coupling and deletion-test claims with a symbol index when the project has one.** "Tightly coupled," "leaks across the seam," and the deletion test all hinge on *who actually depends on a module* — and `rg` both over-reports (comments, docs, same-named symbols on other types) and under-reports (implicit `Self.`/receiver calls). If the project exposes a compiler-accurate symbol-index MCP, get the real reference set before asserting coupling or blast radius:
+
+- **Swift/Xcode projects** (e.g. Propeller) expose `xcode-index-mcp` (`mcp__xcode-index-mcp__*`): `load_index` the project, `search_pattern` to resolve the symbol's USR, then `get_occurrences` for every definition/reference across the app target, SPM packages, and tests. That dependent set is the accurate input to the card's **Files** field and to the deletion test — few cohesive dependents → deleting concentrates complexity (a good seam); many scattered ones → it just moves.
+- Other ecosystems: use the equivalent (LSP `findReferences`, ast-grep, a language index). No symbol-index MCP available → fall back to `rg`, but treat its hits as a superset to verify, not ground truth.
+
+**Freshness caveat:** such an index reflects the **last build**, not your uncommitted edits — for `xcode-index-mcp`, the last build in the *main* worktree's default DerivedData. That makes it a **pre-refactor snapshot** of the existing graph: ideal for Explore (you want the current state), but it will *not* reflect changes made during the grilling loop. Rebuild to refresh it; in a worktree, only a main-worktree build updates it.
+
 ### 2. Present candidates as an HTML report
 
 Write a self-contained HTML file to the OS temp directory so nothing lands in the repo. Resolve the temp dir from `$TMPDIR`, falling back to `/tmp` (or `%TEMP%` on Windows), and write to `<tmpdir>/architecture-review-<timestamp>.html` so each run gets a fresh file. Open it for the user — `xdg-open <path>` on Linux, `open <path>` on macOS, `start <path>` on Windows — and tell them the absolute path.
