@@ -30,6 +30,7 @@ Then spawn a sub-agent to walk the codebase. Don't follow rigid heuristics — e
 - Where are modules **shallow** — interface nearly as complex as the implementation?
 - Where have pure functions been extracted just for testability, but the real bugs hide in how they're called (no **locality**)?
 - Where do tightly-coupled modules leak across their seams?
+- Where is a concept's state spread across independent boolean/optional flags (boolean soup, e.g. `isLoading` + `error` + `data`) that a single sum type would make illegal-state-proof? Collapsing it concentrates the valid-transition logic (**locality**) and shrinks the interface — a genuine deepening.
 - Which parts of the codebase are untested, or hard to test through their current interface?
 
 Apply the **deletion test** to anything you suspect is shallow: would deleting it concentrate complexity, or just move it? A "yes, concentrates" is the signal you want.
