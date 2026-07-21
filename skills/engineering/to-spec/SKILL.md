@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 This skill takes the current conversation context and codebase understanding and produces a spec. Do NOT interview the user — just synthesize what you already know.
 
-The issue tracker and triage label vocabulary should have been provided to you — run `/setup-matt-pocock-skills` if not.
+For the issue tracker, label vocabulary, and lifecycle rules, follow the `issue-workflow` skill — load it first. <!-- local-patch: replaces /setup-matt-pocock-skills -->
 
 ## Process
 
@@ -16,7 +16,7 @@ The issue tracker and triage label vocabulary should have been provided to you �
 
 Check with the user that these seams match their expectations.
 
-3. Write the spec using the template below, then publish it to the project issue tracker. Apply the `ready-for-agent` triage label - no need for additional triage.
+3. Write the spec using the template below, then publish it to the project issue tracker. Apply labels per `issue-workflow` — one each of `status/*`, `mode/*`, `spec/*`, plus `type/*` — then add it to the board: `gh project item-add 2 --owner @me --url <url>`. <!-- local-patch: replaces ready-for-agent -->
 
 <spec-template>
 
